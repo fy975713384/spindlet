@@ -1,2 +1,3 @@
 # test-x
-基于关键字驱动的软件测试框架
+
+A keyword-driven software testing framework.
