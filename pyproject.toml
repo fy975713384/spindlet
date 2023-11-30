@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "test-x"
+name = "spindlet"
 version = "0.0.1"
 description = "A keyword-driven software testing framework"
 authors = ["panfeng <fy975713384@gmail.com>"]
