@@ -3,13 +3,33 @@ name = "spindlet"
 version = "0.0.1"
 description = "A keyword-driven software testing framework"
 authors = ["panfeng <fy975713384@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/fy975713384/spindlet"
+repository = "https://github.com/fy975713384/spindlet"
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-loguru = "0.6.0"
-pendulum = "^2.1.2"
+pydantic = "*"
+pydantic-settings = "*"
+loguru = "*"
+pendulum = "*"
+colorama = "*"
+jsonpath-rw = "*"
+requests = "*"
+pymysql = "*"
+pypika = "*"
+dbutils = "*"
 
 [tool.poetry.dev-dependencies]
+pytest = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
