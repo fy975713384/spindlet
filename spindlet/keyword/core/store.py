@@ -1,16 +1,12 @@
 import copy
-import json
 
 from spindlet.config import settings
+from spindlet.keyword.core.exceptions import CtxVarError
 from spindlet.utils import extract_value
 
 
-class CtxVarError(Exception):
-    pass
-
-
 def parser_ctx(val, ctx_vars: dict):
-    """ 解析实参中的 context variable """
+    """Parse keyword variables in arguments."""
     if isinstance(val, dict):
         return {n: parser_ctx(v, ctx_vars) for n, v in val.items()}
     elif isinstance(val, (tuple, list)):
@@ -18,19 +14,17 @@ def parser_ctx(val, ctx_vars: dict):
     elif isinstance(val, str):
         match = settings.CTX_VAR_PATTERN.match(val)
         if match:
-            val = match.group(1)  # matched context variable
+            val = match.group(1)
             root = val.split(".", 1)[0]
             if root not in ctx_vars:
-                raise CtxVarError(f"context variable <{val}> not exists in {ctx_vars}, "
-                                  f"please set it in the code first")
-            val = extract_value(ctx_vars, val)
-            if func := match.group(2):
-                if func == ".json()":
-                    val = json.loads(val)
+                raise CtxVarError(f"Keyword variable <{val}> does not exist in {ctx_vars}; set it first.")
+            val = extract_value(ctx_vars, val, func=match.group(2))
     return val
 
 
-class Context:
+class KeywordStore:
+    """Keyword variable store shared across keyword methods."""
+
     def __init__(self):
         self.__variables = dict()
         self.__locked = dict()
@@ -44,14 +38,16 @@ class Context:
         return self.__locked
 
     def save(self, name, value) -> None:
-        """ 保存 context variable """
+        """Save a keyword variable."""
         if name is None:
             return
         else:
-            if isinstance(name, str) and name.isidentifier():
-                self.__variables[name] = value
+            if not (isinstance(name, str) and name.isidentifier()):
+                raise CtxVarError("Keyword variable name must be a string and a valid Python identifier.")
+            elif not (value is None or isinstance(value, (int, float, bool, str, list, tuple, dict))):
+                raise CtxVarError("Keyword variable value only supports: None, int, float, bool, str, list, tuple, dict.")
             else:
-                raise CtxVarError(f"the context variable name must be a string and a valid Python identifier")
+                self.__variables[name] = value
 
     def load(self, var: dict = None, lock: dict = None) -> None:
         if var is None:
